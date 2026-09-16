@@ -38,6 +38,6 @@ def show_links():
     ]
     
     for idx, (name, url) in enumerate(links, 1):
-        console.print(f"  [bold cyan]\[{idx}][/bold cyan] [bold white]{name}:[/bold white] [underline blue]{url}[/underline blue]")
+        console.print(f"  [bold cyan]\\[{idx}][/bold cyan] [bold white]{name}:[/bold white] [underline blue]{url}[/underline blue]")
         
     Prompt.ask("\n[dim]Ana menüye dönmek için Enter'a basın...[/dim]")
