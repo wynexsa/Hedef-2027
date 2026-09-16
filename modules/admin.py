@@ -29,7 +29,7 @@ def admin_panel(data):
         run_teacher_menu(data)
     elif choice == "2":
         password = Prompt.ask("[bold yellow]Admin Şifresi[/bold yellow]", password=True)
-        if password != PASSWORD_ADMIN:
+        if password != PASSWORD_ADMIN:  # Düzeltildi: PASSWORD_ADMIN yapıldı
             console.print("\n[bold red][✘] Hatalı admin şifresi![/bold red]")
             Prompt.ask("\n[dim]Devam etmek için Enter'a basın...[/dim]")
             return
