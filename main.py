@@ -1,29 +1,30 @@
 import sys
-import time
+import os
 from datetime import datetime
-from config import DATA_FILE
-from modules.auth import load_data, check_first_run, clear_screen
-from modules.schedule import show_schedule
-from modules.tracker import log_questions
-from modules.announcements import show_announcements, show_links
-from modules.admin import admin_panel
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
 
+# Modül importları
+from modules.auth import load_data, check_first_run, clear_screen
+from modules.announcements import show_announcements
+from modules.tracker import track_questions
+from modules.admin import admin_panel
+
 console = Console()
 
-def calculate_lgs_countdown():
-    target_date = datetime(2027, 6, 6, 9, 30)
+LGS_DATE = datetime(2027, 6, 6, 9, 30, 0)
+
+def get_countdown():
     now = datetime.now()
-    diff = target_date - now
-    if diff.days < 0:
-        return "Sınav Dönemi Tamamlandı"
-    days = diff.days
-    hours = diff.seconds // 3600
-    minutes = (diff.seconds % 3600) // 60
-    seconds = diff.seconds % 60
-    return f"{days} Gün {hours} Saat {minutes} Dakika {seconds} Saniye"
+    remaining = LGS_DATE - now
+    if remaining.total_seconds() <= 0:
+        return "[bold red]LGS 2027 Başladı veya Sona Erdi![/bold red]"
+    
+    days = remaining.days
+    hours, remainder = divmod(remaining.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"[bold yellow]{days} gün {hours} saat {minutes} dakika {seconds} saniye[/bold yellow]"
 
 def main():
     data = load_data()
@@ -31,50 +32,50 @@ def main():
     
     while True:
         clear_screen()
+        
+        # Üst Bilgi Paneli & Canlı Geri Sayım
         student = data.get("student", {})
-        student_name = student.get("full_name", "Belirtilmedi")
-        student_no = student.get("school_number", "---")
+        welcome_msg = f"Hoş geldin, [bold cyan]{student.get('full_name', 'Öğrenci')}[/bold cyan] ({student.get('school_number', 'No Yok')}) | LGS 2027'ye Kalan: {get_countdown()}"
+        console.print(Panel(welcome_msg, title="[bold green]HEDEF 2027 - LGS ASİSTANI[/bold green]", expand=False))
         
-        now = datetime.now()
-        days_tr = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
-        day_str = days_tr[now.weekday()]
-        date_str = now.strftime("%d.%m.%Y - %H:%M:%S")
+        # Sadeleştirilmiş Ana Menü ([0-5])
+        console.print("  [bold cyan][1][/bold cyan] 📢 Duyurular")
+        console.print("  [bold cyan][2][/bold cyan] ✍️ Soru Günlüğü ve Takip")
+        console.print("  [bold cyan][3][/bold cyan] 🔗 LGS Faydalı Linkler")
+        console.print("  [bold cyan][4][/bold cyan] 🔐 Yetkili Paneli (Öğretmen / Admin)")
+        console.print("  [bold cyan][5][/bold cyan] 👤 Öğrenci Bilgilerimi Göster")
+        console.print("  [bold red][0][/bold red] 🚪 Çıkış\n")
         
-        header_text = (
-            f"[bold white]👤 Öğrenci:[/bold white] {student_name} (No: {student_no})\n"
-            f"[bold white]📅 Tarih / Saat:[/bold white] {date_str} {day_str}\n"
-            f"[bold white]⏳ LGS'ye Kalan Süre:[/bold white] {calculate_lgs_countdown()}"
-        )
-        
-        console.print(Panel(header_text, title="[bold cyan]HEDEF 2027 v1.0 | Oruç Reis Ortaokulu 8-C[/bold cyan]", expand=False))
-        
-        menu = (
-            "\n"
-            "  [bold cyan][1][/bold cyan] 📋 Günlük Ders Programı\n"
-            "  [bold cyan][2][/bold cyan] ✍️ Günlük Soru Çözüm Günlüğü\n"
-            "  [bold cyan][3][/bold cyan] 🔗 Faydalı LGS Linkleri\n"
-            "  [bold cyan][4][/bold cyan] 🔐 Öğretmen / Admin Girişi\n"
-            "  [bold cyan][5][/bold cyan] 📢 Sınıf Duyuruları\n"
-            "  [bold red][0][/bold red] 🚪 Çıkış\n"
-        )
-        console.print(menu)
-        
-        choice = Prompt.ask("[bold yellow]Seçiminiz (0-5)[/bold yellow]", choices=["0", "1", "2", "3", "4", "5"])
+        choice = Prompt.ask("Seçiminiz", choices=["0", "1", "2", "3", "4", "5"])
         
         if choice == "0":
             clear_screen()
-            console.print("[bold green]İyi çalışmalar! LGS yolunda başarılar dileriz...[/bold green]\n")
-            sys.exit(0)
+            console.print("[bold yellow]Hedef 2027 Asistanı kapatılıyor. Başarılar dileriz![/bold yellow]")
+            sys.exit()
         elif choice == "1":
-            show_schedule(data)
+            show_announcements(data)
         elif choice == "2":
-            log_questions(data)
+            track_questions(data)
         elif choice == "3":
-            show_links()
+            clear_screen()
+            console.print(Panel("[bold cyan]🔗 LGS FAYDALI LİNKLER[/bold cyan]", expand=False))
+            console.print("  • [link=https://www.tongucakademi.com]Tonguç Akademi LGS Portalı[/link]")
+            console.print("  • [link=https://www.meb.gov.tr]MEB Resmi Duyurular ve Örnek Sorular[/link]")
+            console.print("  • [link=https://odsgm.meb.gov.tr]ÖDSGM Soru Destek Hizmetleri[/link]\n")
+            Prompt.ask("[dim]Geri dönmek için Enter'a basın...[/dim]")
         elif choice == "4":
             admin_panel(data)
         elif choice == "5":
-            show_announcements(data)
+            clear_screen()
+            console.print(Panel("[bold cyan]👤 ÖĞRENCİ PROFİL BİLGİLERİ[/bold cyan]", expand=False))
+            console.print(f"  [bold]Ad Soyad:[/bold] {student.get('full_name')}")
+            console.print(f"  [bold]Okul Numarası:[/bold] {student.get('school_number')}")
+            console.print(f"  [bold]Gizli Soru:[/bold] {student.get('secret_question')}")
+            Prompt.ask("\n[dim]Geri dönmek için Enter'a basın...[/dim]")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nÇıkış yapıldı.")
+        sys.exit()
