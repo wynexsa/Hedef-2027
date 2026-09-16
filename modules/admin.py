@@ -29,11 +29,46 @@ def admin_panel(data):
         run_teacher_menu(data)
     elif choice == "2":
         password = Prompt.ask("[bold yellow]Admin Şifresi[/bold yellow]", password=True)
-        if password != PASSWORD_ADMIN:  # Düzeltildi: PASSWORD_ADMIN yapıldı
+        if password != PASSWORD_ADMIN:
             console.print("\n[bold red][✘] Hatalı admin şifresi![/bold red]")
             Prompt.ask("\n[dim]Devam etmek için Enter'a basın...[/dim]")
             return
         run_admin_menu(data)
+
+def send_student_recommendation(data):
+    clear_screen()
+    console.print(Panel("[bold cyan]📚 ÖĞRENCİYE KİTAP / ÖNERİ GÖNDER[/bold cyan]", expand=False))
+    
+    student = data.get("student", {})
+    full_name = student.get("full_name", "")
+    
+    if not full_name:
+        console.print("[yellow]Sisteme kayıtlı aktif öğrenci bulunmuyor.[/yellow]")
+        Prompt.ask("\n[dim]Geri dönmek için Enter'a basın...[/dim]")
+        return
+    
+    console.print(f"Kayıtlı Öğrenci: [bold green]{full_name}[/bold green] (No: {student.get('school_number', '---')})\n")
+    
+    confirm = Prompt.ask(f"Bu öğrenciye öneri/bildirim göndermek istiyor musunuz? (E/H)", choices=["E", "H", "e", "h"])
+    if confirm.lower() == "e":
+        message = Prompt.ask("[bold yellow]Öneri / Bildirim Metni (Örn: Bu kitabı mutlaka çözmelisin)[/bold yellow]").strip()
+        if message:
+            if "notifications" not in student:
+                data["student"]["notifications"] = []
+            
+            date_str = datetime.now().strftime("%d.%m.%Y %H:%M")
+            new_notif = {
+                "date": date_str,
+                "sender": "Öğretmen",
+                "content": message
+            }
+            data["student"]["notifications"].append(new_notif)
+            save_data(data)
+            console.print("\n[bold green][✔] Öneri başarıyla öğrencinin bildirim paneline gönderildi![/bold green]")
+        else:
+            console.print("\n[bold red][✘] Mesaj boş olamaz![/bold red]")
+    
+    Prompt.ask("\n[dim]Devam etmek için Enter'a basın...[/dim]")
 
 def show_registered_students(data):
     clear_screen()
@@ -63,10 +98,11 @@ def run_teacher_menu(data):
         console.print(Panel("[bold cyan]ÖĞRETMEN YÖNETİM PANELİ[/bold cyan]", expand=False))
         console.print("  [bold cyan][1][/bold cyan] Duyuru Yayınla")
         console.print("  [bold cyan][2][/bold cyan] Kayıtlı Öğrenciyi Listele")
-        console.print("  [bold cyan][3][/bold cyan] Öğrenci Soru Günlüklerini İncele")
+        console.print("  [bold cyan][3][/bold cyan] Öğrenciye Kitap / Öneri Gönder")
+        console.print("  [bold cyan][4][/bold cyan] Öğrenci Soru Günlüklerini İncele")
         console.print("  [bold red][0][/bold red] Ana Menüye Dön\n")
         
-        choice = Prompt.ask("Seçiminiz", choices=["0", "1", "2", "3"])
+        choice = Prompt.ask("Seçiminiz", choices=["0", "1", "2", "3", "4"])
         if choice == "0":
             break
         elif choice == "1":
@@ -90,6 +126,8 @@ def run_teacher_menu(data):
         elif choice == "2":
             show_registered_students(data)
         elif choice == "3":
+            send_student_recommendation(data)
+        elif choice == "4":
             clear_screen()
             console.print(Panel("[bold cyan]ÖĞRENCİ SORU GÜNLÜKLERİ[/bold cyan]", expand=False))
             logs = data.get("question_logs", {})
@@ -108,12 +146,13 @@ def run_admin_menu(data):
         console.print(Panel("[bold cyan]👑 TAM YETKİLİ ADMIN PANELİ[/bold cyan]", expand=False))
         console.print("  [bold cyan][1][/bold cyan] Duyuru Ekle")
         console.print("  [bold cyan][2][/bold cyan] Kayıtlı Öğrenciyi Listele")
-        console.print("  [bold cyan][3][/bold cyan] Tüm Duyuruları Temizle")
-        console.print("  [bold cyan][4][/bold cyan] Öğrenci Profilini Sıfırla")
-        console.print("  [bold cyan][5][/bold cyan] Tüm Soru Günlüklerini Sıfırla")
+        console.print("  [bold cyan][3][/bold cyan] Öğrenciye Kitap / Öneri Gönder")
+        console.print("  [bold cyan][4][/bold cyan] Tüm Duyuruları Temizle")
+        console.print("  [bold cyan][5][/bold cyan] Öğrenci Profilini Sıfırla")
+        console.print("  [bold cyan][6][/bold cyan] Tüm Soru Günlüklerini Sıfırla")
         console.print("  [bold red][0][/bold red] Ana Menüye Dön\n")
         
-        choice = Prompt.ask("Seçiminiz", choices=["0", "1", "2", "3", "4", "5"])
+        choice = Prompt.ask("Seçiminiz", choices=["0", "1", "2", "3", "4", "5", "6"])
         if choice == "0":
             break
         elif choice == "1":
@@ -137,22 +176,25 @@ def run_admin_menu(data):
         elif choice == "2":
             show_registered_students(data)
         elif choice == "3":
+            send_student_recommendation(data)
+        elif choice == "4":
             data["announcements"] = []
             save_data(data)
             console.print("[bold green][✔] Tüm duyurular silindi.[/bold green]")
             Prompt.ask("\n[dim]Devam etmek için Enter'a basın...[/dim]")
-        elif choice == "4":
+        elif choice == "5":
             data["student"] = {
                 "full_name": "",
                 "school_number": "",
                 "password": "",
                 "secret_question": "",
-                "secret_answer": ""
+                "secret_answer": "",
+                "notifications": []
             }
             save_data(data)
             console.print("[bold green][✔] Öğrenci profili sıfırlandı.[/bold green]")
             Prompt.ask("\n[dim]Devam etmek için Enter'a basın...[/dim]")
-        elif choice == "5":
+        elif choice == "6":
             data["question_logs"] = {}
             save_data(data)
             console.print("[bold green][✔] Tüm soru günlükleri temizlendi.[/bold green]")
