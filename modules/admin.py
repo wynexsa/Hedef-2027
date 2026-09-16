@@ -29,7 +29,7 @@ def admin_panel(data):
         run_teacher_menu(data)
     elif choice == "2":
         password = Prompt.ask("[bold yellow]Admin Şifresi[/bold yellow]", password=True)
-        if password != ADMIN_PASSWORD:
+        if password != PASSWORD_ADMIN:
             console.print("\n[bold red][✘] Hatalı admin şifresi![/bold red]")
             Prompt.ask("\n[dim]Devam etmek için Enter'a basın...[/dim]")
             return
@@ -142,7 +142,13 @@ def run_admin_menu(data):
             console.print("[bold green][✔] Tüm duyurular silindi.[/bold green]")
             Prompt.ask("\n[dim]Devam etmek için Enter'a basın...[/dim]")
         elif choice == "4":
-            data["student"] = {"full_name": "", "school_number": ""}
+            data["student"] = {
+                "full_name": "",
+                "school_number": "",
+                "password": "",
+                "secret_question": "",
+                "secret_answer": ""
+            }
             save_data(data)
             console.print("[bold green][✔] Öğrenci profili sıfırlandı.[/bold green]")
             Prompt.ask("\n[dim]Devam etmek için Enter'a basın...[/dim]")
