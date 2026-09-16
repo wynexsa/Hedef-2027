@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from config import DATA_FILE, DEFAULT_DATA
 from rich.console import Console
 from rich.panel import Panel
@@ -18,7 +19,7 @@ def load_data():
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception:
-            return DEFAULT_DATA
+        return DEFAULT_DATA
 
 def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
@@ -67,8 +68,12 @@ def check_first_run(data):
                 console.print("\n[bold red][✘] Tüm alanları eksiksiz doldurmalısınız![/bold red]")
                 Prompt.ask("\n[dim]Tekrar denemek için Enter'a basın...[/dim]")
     
-    # Kayıt varsa giriş yapma / şifre sorma döngüsü
+    # Giriş / Şifre Sıfırlama Döngüsü
     while True:
+        # Verileri her döngüde güncel okuyalım ki şifre değiştiğinde anında yansısın
+        current_data = load_data()
+        student = current_data.get("student", {})
+
         clear_screen()
         console.print(Panel("[bold cyan]HEDEF 2027 - ÖĞRENCİ GİRİŞİ[/bold cyan]", expand=False))
         console.print("  [bold cyan][1][/bold cyan] Giriş Yap")
@@ -83,7 +88,7 @@ def check_first_run(data):
             entered_pass = Prompt.ask("[bold yellow]Şifreniz[/bold yellow]", password=True).strip()
             if entered_pass == student.get("password"):
                 console.print(f"\n[bold green]Giriş başarılı! Hoş geldin, {student.get('full_name')}.[/bold green]")
-                time.sleep(1) if 'time' in globals() else None
+                time.sleep(1)
                 break
             else:
                 console.print("\n[bold red][✘] Hatalı şifre![/bold red]")
@@ -91,6 +96,12 @@ def check_first_run(data):
         elif choice == "2":
             clear_screen()
             console.print(Panel("[bold cyan]ŞİFRE SIFIRLAMA MERKEZİ[/bold cyan]", expand=False))
+            
+            if not student.get("secret_question"):
+                console.print("[red]Kayıtlı gizli soru bulunamadı![/red]")
+                Prompt.ask("\n[dim]Geri dönmek için Enter'a basın...[/dim]")
+                continue
+
             console.print(f"Kayıtlı Gizli Soru: [bold yellow]{student.get('secret_question')}[/bold yellow]")
             ans = Prompt.ask("Gizli Soru Cevabınız").strip().lower()
             
@@ -98,11 +109,12 @@ def check_first_run(data):
                 console.print("\n[bold green][✔] Cevap doğru! Yeni şifrenizi belirleyebilirsiniz.[/bold green]")
                 new_pass = Prompt.ask("[bold yellow]Yeni Şifreniz[/bold yellow]", password=True).strip()
                 if new_pass:
+                    current_data["student"]["password"] = new_pass
+                    save_data(current_data)
                     data["student"]["password"] = new_pass
-                    save_data(data)
                     console.print("\n[bold green][✔] Şifreniz başarıyla güncellendi! Yeni şifrenizle giriş yapabilirsiniz.[/bold green]")
                 else:
-                    console.print("\n[bold red][✘] Şifre boş olamaz![/bold red]")
+                    console.print("\n[bold red][✘] Şifre boş olamaz, sıfırlama iptal edildi.[/bold red]")
             else:
                 console.print("\n[bold red][✘] Gizli soru cevabı yanlış! Şifre sıfırlanamadı.[/bold red]")
             Prompt.ask("\n[dim]Devam etmek için Enter'a basın...[/dim]")
