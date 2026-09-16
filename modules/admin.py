@@ -1,5 +1,5 @@
 from datetime import datetime
-from config import ADMIN_PASSWORD, PASSWORD_TEACHER
+from config import PASSWORD_ADMIN, PASSWORD_TEACHER
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
@@ -28,7 +28,7 @@ def admin_panel(data):
         run_teacher_menu(data)
     elif choice == "2":
         password = Prompt.ask("[bold yellow]Admin Şifresi[/bold yellow]", password=True)
-        if password != ADMIN_PASSWORD:
+        if password != PASSWORD_ADMIN:
             console.print("\n[bold red][✘] Hatalı admin şifresi![/bold red]")
             Prompt.ask("\n[dim]Devam etmek için Enter'a basın...[/dim]")
             return
@@ -37,7 +37,7 @@ def admin_panel(data):
 def run_teacher_menu(data):
     while True:
         clear_screen()
-        console.print(Panel("[bold cyan]öğretmen YÖNETİM PANELİ[/bold cyan]", expand=False))
+        console.print(Panel("[bold cyan]ÖĞRETMEN YÖNETİM PANELİ[/bold cyan]", expand=False))
         console.print("  [bold cyan][1][/bold cyan] Duyuru Yayınla")
         console.print("  [bold cyan][2][/bold cyan] Öğrenci Soru Günlüklerini İncele")
         console.print("  [bold red][0][/bold red] Ana Menüye Dön\n")
