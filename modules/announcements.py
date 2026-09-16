@@ -12,7 +12,7 @@ def show_announcements(data):
     announcements = data.get("announcements", [])
     
     if not announcements:
-        console.print("[yellow]Henüz yayınlanmış bir duyuru bulunmuyor.[/yellow]")
+        console.print("[bold yellow]Aktif duyuru yok.[/bold yellow]")
     else:
         for item in reversed(announcements):
             title = item.get("title", "Duyuru")
@@ -31,6 +31,7 @@ def show_links():
     
     links = [
         ("MEB ÖDS (Örnek Sorular)", "https://ods.meb.gov.tr"),
+        ("Tonguç Akademi (LGS Kampı)", "https://www.tongucakademi.com"),
         ("MEB LGS Ana Sayfası", "https://www.meb.gov.tr"),
         ("EBA (Eğitim Bilişim Ağı)", "https://www.eba.gov.tr"),
         ("OGM Materyal", "https://ogmmateryal.eba.gov.tr")
