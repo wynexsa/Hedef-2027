@@ -14,7 +14,7 @@ DEFAULT_DATA = {
         "password": "",
         "secret_question": "",
         "secret_answer": "",
-        "notifications": []  # Öğrenciye özel bildirimler ve öneriler buraya düşecek
+        "notifications": []  
     },
     "announcements": [],
     "question_logs": {}
