@@ -3,24 +3,16 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(BASE_DIR, "lgs_data.json")
 
-# Yetkilendirme Şifreleri
-PASSWORD_TEACHER = "OrucReis_8C!"
+# Şifreler
 PASSWORD_ADMIN = "W1ndows_LinuX#2026"
+PASSWORD_TEACHER = "OrucReis_8C!"
 
 DEFAULT_DATA = {
     "student": {
         "full_name": "",
         "school_number": ""
     },
-    "announcements": [
-        {
-            "id": 1,
-            "date": "16.09.2026",
-            "author": "Sistem",
-            "title": "Hoş Geldiniz",
-            "content": "Hedef 2027 LGS Takip Asistanı kullanıma hazırdır."
-        }
-    ],
+    "announcements": [],
     "question_logs": {},
     "schedule": {
         "Pazartesi": [
@@ -47,8 +39,8 @@ DEFAULT_DATA = {
             {"time": "09:00 - 09:40", "lesson": "Rehberlik", "teacher": "Şeymanur Güner"},
             {"time": "09:50 - 10:30", "lesson": "Türk Sosyal Hayatı", "teacher": "Ayşenur Temel"},
             {"time": "10:40 - 11:20", "lesson": "Din Kültürü", "teacher": "Hatice Akpınar"},
-            {"time": "11:30 - 12:10", "lesson": "Boş / Etkinlik", "teacher": "-"},
-            {"time": "12:20 - 13:00", "lesson": "Boş / Etkinlik", "teacher": "-"}
+            {"time": "11:30 - 12:10", "lesson": "Seçmeli Matematik", "teacher": "Ahmet Yılmaz"},
+            {"time": "12:20 - 13:00", "lesson": "Seçmeli Matematik", "teacher": "Ahmet Yılmaz"}
         ],
         "Perşembe": [
             {"time": "07:20 - 08:00", "lesson": "Fen Bilimleri", "teacher": "Mehmet Demir"},
