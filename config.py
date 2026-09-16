@@ -13,7 +13,8 @@ DEFAULT_DATA = {
         "school_number": "",
         "password": "",
         "secret_question": "",
-        "secret_answer": ""
+        "secret_answer": "",
+        "notifications": []  # Öğrenciye özel bildirimler ve öneriler buraya düşecek
     },
     "announcements": [],
     "question_logs": {}
