@@ -10,7 +10,10 @@ PASSWORD_TEACHER = "OrucReis_8C!"
 DEFAULT_DATA = {
     "student": {
         "full_name": "",
-        "school_number": ""
+        "school_number": "",
+        "password": "",
+        "secret_question": "",
+        "secret_answer": ""
     },
     "announcements": [],
     "question_logs": {},
