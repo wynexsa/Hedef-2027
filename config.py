@@ -3,12 +3,12 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(BASE_DIR, "lgs_data.json")
 
-# Şifre Tanımlamaları
-PASSWORD_TEACHER = "OrucReis_8C!"
-PASSWORD_ADMIN = "W1ndows_LinuX#2026"
+PASSWORD_TEACHER = "Şeymanur!4858"
+PASSWORD_ADMIN = "Abdo3256/*-+"
 
 DEFAULT_DATA = {
-    "students": [],     
-    "teachers": [],      
-    "announcements": [], 
-    "question_logs": {}  
+    "students": [],
+    "teachers": [],
+    "announcements": [],
+    "question_logs": {}
+}
